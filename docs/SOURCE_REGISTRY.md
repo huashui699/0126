@@ -1,6 +1,6 @@
 # 0126 Football 首批 14 支球队与消息来源登记表
 
-> 文档版本：v1.1<br>
+> 文档版本：v1.2<br>
 > 核对日期：2026-08-06<br>
 > 用途：MVP 球队初始化、采集器开发、来源可信度配置与运营审核
 
@@ -122,23 +122,26 @@
 | `manual_only` | 只能由运营人员录入链接和必要摘要 | 是，人工方式 |
 | `blocked` | 条款禁止、技术封锁或风险不可接受 | 否 |
 
+2026-08-06 的逐来源实时审核结果见 [SOURCE_AUDIT_2026-08-06.md](./SOURCE_AUDIT_2026-08-06.md)。在该审核中，14 个俱乐部 HTML、5 个联赛 HTML 和首批 5 个媒体 Feed 均未获得“可直接用于生产自动采集”的批准。
+
 ## 7. 建议的第一批实际接入顺序
 
-### Wave 1：官方底座
+### Wave 1：官方身份与替代渠道底座
 
-1. 14 支球队官网新闻页。
-2. 5 个联赛官方新闻页。
-3. 14 支球队官方 YouTube 频道，通过 YouTube Data API 读取新视频元数据。
+1. 将 14 支球队和 5 个联赛官网登记为官方身份与原文白名单，不直接启用 HTML 生产采集。
+2. 运营人员可以人工录入必要标题、短事实和原文链接。
+3. 14 支球队官方 YouTube 频道在完成频道稳定 ID 和 API 条款审核后，通过 YouTube Data API 读取视频元数据。
+4. 同步联系俱乐部和联赛获取 Pressroom Feed、官方 API、媒体邮件或书面内容许可。
 
 进入开发前，对每个官网完成：robots 检查、服务条款检查、更新频率测试、页面/API 结构记录。若不允许自动采集，则改为官方邮件、RSS、API、授权或人工录入。
 
-### Wave 2：有明确 Feed 入口的媒体
+### Wave 2：媒体授权
 
-1. BBC Sport Football。
-2. Diario AS Football/球队 Feed。
-3. kicker Football/球队 Feed。
-4. La Gazzetta dello Sport Calcio/Serie A Feed。
-5. L'Équipe Football Feed——仅在使用权确认后启用。
+1. BBC Sport Football：Feed 活跃，但商业用途需要许可。
+2. kicker Football/球队 Feed：Feed 活跃，商业用途应购买 Content Syndication。
+3. La Gazzetta dello Sport Calcio/Serie A Feed：Feed 活跃，数据挖掘政策要求书面同意。
+4. Diario AS Football：现有 Feed 已停更且条款保留机器读取/AI 权利，保持禁用。
+5. L'Équipe Football：仅限个人、非专业、非集体使用，保持禁用。
 
 ### Wave 3：需授权或技术验证的媒体
 
@@ -203,4 +206,4 @@ active
 
 首批 14 队和 33 个官方核心入口（14 个球队官网、14 个官方 YouTube、5 个联赛官网）已经确定；同时建立 10 家主流体育媒体候选池。
 
-开发阶段不应一次接入全部来源。建议先完成 14 个球队和 5 个联赛的来源模型，再挑选 4–5 个权利边界较清楚的 RSS 进行自动采集。这样可以先验证球队匹配、去重、AI 摘要、日历展示和可信度流转，再逐步扩大媒体与社交平台覆盖。
+开发阶段不应一次接入全部来源。先完成 14 个球队和 5 个联赛的来源模型，用自建模拟 Feed 验证球队匹配、去重、AI 摘要、日历展示和可信度流转；真实生产数据只接入已获得书面许可或明确官方 API 授权的来源。逐来源审核不得被技术开发进度绕过。
