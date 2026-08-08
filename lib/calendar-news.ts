@@ -68,7 +68,7 @@ export async function getCalendarNews(month: string): Promise<CalendarResult> {
   ]);
 
   if (published.error || events.error) {
-    console.error("Unable to load calendar news:", published.error?.message ?? events.error?.message);
+    console.warn("Unable to load calendar news; using preview fixtures:", published.error?.message ?? events.error?.message);
     return { items: fixturesForMonth(month), mode: "fallback" };
   }
 
@@ -79,15 +79,16 @@ export async function getCalendarNews(month: string): Promise<CalendarResult> {
 
 export async function getCalendarNewsById(id: string): Promise<CalendarNews | null> {
   const fixture = calendarFixtures.find((item) => item.id === id) ?? null;
+  if (fixture) return fixture;
   const client = createPublicClient();
-  if (!client) return fixture;
+  if (!client) return null;
 
   const { data, error } = await client.from("news").select(selectFields).eq("id", id).maybeSingle();
   if (error) {
-    console.error("Unable to load calendar detail:", error.message);
-    return fixture;
+    console.warn("Unable to load calendar detail:", error.message);
+    return null;
   }
-  return data ? normalizeRow(data as unknown as Record<string, unknown>) : fixture;
+  return data ? normalizeRow(data as unknown as Record<string, unknown>) : null;
 }
 
 export function safeExternalUrl(value: string | null): URL | null {

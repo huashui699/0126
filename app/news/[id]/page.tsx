@@ -23,7 +23,7 @@ type NewsDetailProps = {
 
 function safeReturnPath(value: string | string[] | undefined): string {
   const candidate = Array.isArray(value) ? value[0] : value;
-  return candidate?.startsWith("/calendar") ? candidate : "/calendar";
+  return candidate?.startsWith("/") && !candidate.startsWith("//") ? candidate : "/";
 }
 
 export async function generateMetadata({ params }: Pick<NewsDetailProps, "params">): Promise<Metadata> {
@@ -44,7 +44,7 @@ export default async function NewsDetailPage({ params, searchParams }: NewsDetai
     <div className="site-shell">
       <Header />
       <main className="detail-page page-width">
-        <Link className="detail-back" href={returnPath}>← 返回原日期和筛选</Link>
+        <Link className="detail-back" href={returnPath}>← 返回当天情报</Link>
 
         <article className="detail-article">
           <header className="detail-header">
@@ -64,7 +64,7 @@ export default async function NewsDetailPage({ params, searchParams }: NewsDetai
 
           <div className="detail-layout">
             <section className="detail-content" aria-labelledby="summary-title">
-              <h2 id="summary-title">中文摘要</h2>
+              <h2 id="summary-title">新闻内容</h2>
               <p>{item.content ?? item.summary ?? "内容正在整理中。"}</p>
               {externalUrl ? (
                 <a className="source-link" href={externalUrl.toString()} target="_blank" rel="noopener noreferrer">
@@ -75,7 +75,7 @@ export default async function NewsDetailPage({ params, searchParams }: NewsDetai
 
             <aside className="trust-explanation" aria-labelledby="trust-title">
               <span className="section-kicker">WHY THIS LABEL</span>
-              <h2 id="trust-title">为什么这样标记</h2>
+              <h2 id="trust-title">来源与可信度</h2>
               <p>{item.trust_reason}</p>
               <small>标签表示当前证据支持程度，不是对事实真假的最终裁决。</small>
             </aside>
