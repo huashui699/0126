@@ -9,6 +9,7 @@ export function Header() {
           <span>FOOTBALL</span>
         </Link>
         <nav className="header-nav" aria-label="主导航">
+          <Link href="/calendar">情报日历</Link>
           <Link href="/onboarding/teams">我的球队</Link>
           <Link href="/auth">登录</Link>
         </nav>

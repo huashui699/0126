@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase";
-import { readGuestFollows, writeGuestFollows } from "@/lib/guest-follows";
+import { clearGuestRecoveryNotice, readGuestFollows, writeGuestFollows } from "@/lib/guest-follows";
 import { replaceAccountFollows } from "@/lib/account-follows";
 import { leagues, searchTeams, teams } from "@/lib/teams";
 
@@ -24,6 +24,7 @@ export function TeamPicker() {
     let active = true;
     async function load() {
       const guest = readGuestFollows(validTeamIds);
+      if (guest.recovered) setRecovered(true);
       let initial = guest.teamIds;
       const client = createBrowserClient();
       const { data: authData } = client ? await client.auth.getSession() : { data: { session: null } };
@@ -39,8 +40,8 @@ export function TeamPicker() {
 
       if (active) {
         setSelected(initial);
-        setRecovered((current) => current || guest.recovered);
         setReady(true);
+        clearGuestRecoveryNotice();
       }
     }
     void load();
@@ -199,6 +200,7 @@ export function TeamPicker() {
         <button className="primary-action" disabled={!selected.length || saving} onClick={() => void save()}>
           {saving ? "保存中…" : "保存我的球队"}
         </button>
+        {selected.length ? <Link className="calendar-entry" href="/calendar">打开情报日历 →</Link> : null}
         <div className="status-slot" aria-live="polite">{status}</div>
       </aside>
     </div>

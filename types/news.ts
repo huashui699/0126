@@ -10,3 +10,24 @@ export type News = {
   team: string | null;
   created_at: string;
 };
+
+export type InformationType =
+  | "club_announcement"
+  | "match"
+  | "player"
+  | "transfer"
+  | "coaching"
+  | "social"
+  | "media";
+
+export type TrustStatus = "confirmed" | "unverified" | "rumor";
+
+export type CalendarNews = News & {
+  published_at: string;
+  event_at: string | null;
+  info_type: InformationType;
+  trust_status: TrustStatus;
+  trust_reason: string;
+  trust_updated_at: string;
+  team_ids: string[];
+};

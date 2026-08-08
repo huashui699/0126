@@ -209,3 +209,125 @@ begin
   end if;
 end;
 $$;
+
+insert into public.news (
+  id, title, summary, content, source, url, league, team, created_at,
+  published_at, event_at, info_type, trust_status, trust_reason, trust_updated_at
+)
+values
+  (
+    '50000000-0000-4000-8000-000000000001',
+    '曼城公布公开训练安排（M3 验收样例）',
+    '球队公布本周公开训练和媒体开放时间，日历按原始发布时间展示。',
+    '这是用于验证日历、筛选与详情追溯的合成数据，不代表真实新闻。',
+    'Manchester City Official · Fixture', 'https://www.mancity.com/', '英超', '曼城',
+    '2026-08-08T01:30:00Z', '2026-08-08T01:30:00Z', null,
+    'club_announcement', 'confirmed', '验收数据标记为官方渠道样例；仅验证展示规则，不用于事实判断。', '2026-08-08T01:35:00Z'
+  ),
+  (
+    '50000000-0000-4000-8000-000000000002',
+    '皇马新援参加合练（M3 验收样例）',
+    '多家媒体观察到新援参与合练，但俱乐部尚未发布完整名单。',
+    '这是用于验证待核实状态和多球队筛选的合成数据。',
+    '0126 Fixture Desk', 'https://www.realmadrid.com/', '西甲', '皇家马德里',
+    '2026-08-08T03:00:00Z', '2026-08-08T03:00:00Z', null,
+    'media', 'unverified', '存在明确来源，但尚无针对该细节的直接官方确认。', '2026-08-08T03:10:00Z'
+  ),
+  (
+    '50000000-0000-4000-8000-000000000003',
+    '利物浦确认青年队晋升名单（M3 验收样例）',
+    '俱乐部公布进入一线队训练名单的青年球员。',
+    '合成验收条目，用于验证球员类信息和官方确认标签。',
+    'Liverpool FC Official · Fixture', 'https://www.liverpoolfc.com/', '英超', '利物浦',
+    '2026-08-07T08:00:00Z', '2026-08-07T08:00:00Z', null,
+    'player', 'confirmed', '验收数据模拟俱乐部官网直接发布。', '2026-08-07T08:05:00Z'
+  ),
+  (
+    '50000000-0000-4000-8000-000000000004',
+    '巴萨训练赛阵容观察（M3 验收样例）',
+    '训练赛阵容来自媒体现场观察，正式比赛安排仍待官方发布。',
+    '合成验收条目，用于验证过去日期和待核实状态。',
+    '0126 Fixture Desk', 'https://www.fcbarcelona.com/', '西甲', '巴塞罗那',
+    '2026-08-06T12:20:00Z', '2026-08-06T12:20:00Z', null,
+    'coaching', 'unverified', '单一媒体观察可追溯，但缺少第二个独立来源。', '2026-08-06T12:25:00Z'
+  ),
+  (
+    '50000000-0000-4000-8000-000000000005',
+    '拜仁球迷开放日（M3 验收样例）',
+    '活动将在上海时间 8 月 10 日晚举行，日历按事件时间展示。',
+    '合成验收条目，用于验证 published_at 与 event_at 的区别。',
+    'FC Bayern Official · Fixture', 'https://fcbayern.com/', '德甲', '拜仁慕尼黑',
+    '2026-08-08T04:00:00Z', '2026-08-08T04:00:00Z', '2026-08-10T11:00:00Z',
+    'social', 'confirmed', '验收数据模拟俱乐部官方活动公告，并保留独立事件时间。', '2026-08-08T04:10:00Z'
+  ),
+  (
+    '50000000-0000-4000-8000-000000000006',
+    '国际米兰季前赛安排更新（M3 验收样例）',
+    '开球时间调整为上海时间 8 月 12 日凌晨。',
+    '合成验收条目，用于验证未来比赛和月历计数。',
+    'Inter Official · Fixture', 'https://www.inter.it/', '意甲', '国际米兰',
+    '2026-08-08T05:00:00Z', '2026-08-08T05:00:00Z', '2026-08-11T18:30:00Z',
+    'match', 'confirmed', '验收数据模拟俱乐部官方赛程更新。', '2026-08-08T05:05:00Z'
+  ),
+  (
+    '50000000-0000-4000-8000-000000000007',
+    '阿森纳续约谈判进展（M3 验收样例）',
+    '报道表示双方继续沟通，尚无正式公告。',
+    '合成验收条目，用于验证转会类筛选和待核实标签。',
+    '0126 Fixture Desk', 'https://www.arsenal.com/', '英超', '阿森纳',
+    '2026-08-09T02:00:00Z', '2026-08-09T02:00:00Z', null,
+    'transfer', 'unverified', '报道可追溯，但俱乐部尚未确认谈判结论。', '2026-08-09T02:05:00Z'
+  ),
+  (
+    '50000000-0000-4000-8000-000000000008',
+    '巴黎公布社区活动（M3 验收样例）',
+    '俱乐部球员将参加本地青训社区活动。',
+    '合成验收条目，用于验证未来日期和不同联赛展示。',
+    'Paris Saint-Germain Official · Fixture', 'https://www.psg.fr/', '法甲', '巴黎圣日耳曼',
+    '2026-08-09T04:00:00Z', '2026-08-09T04:00:00Z', '2026-08-13T09:00:00Z',
+    'club_announcement', 'confirmed', '验收数据模拟俱乐部官网直接发布的活动公告。', '2026-08-09T04:05:00Z'
+  )
+on conflict (id) do update set
+  title = excluded.title,
+  summary = excluded.summary,
+  content = excluded.content,
+  source = excluded.source,
+  url = excluded.url,
+  league = excluded.league,
+  team = excluded.team,
+  published_at = excluded.published_at,
+  event_at = excluded.event_at,
+  info_type = excluded.info_type,
+  trust_status = excluded.trust_status,
+  trust_reason = excluded.trust_reason,
+  trust_updated_at = excluded.trust_updated_at;
+
+insert into public.news_teams (news_id, team_id, relationship)
+values
+  ('50000000-0000-4000-8000-000000000001', '20000000-0000-4000-8000-000000000004', 'subject'),
+  ('50000000-0000-4000-8000-000000000002', '20000000-0000-4000-8000-000000000007', 'subject'),
+  ('50000000-0000-4000-8000-000000000003', '20000000-0000-4000-8000-000000000002', 'subject'),
+  ('50000000-0000-4000-8000-000000000004', '20000000-0000-4000-8000-000000000008', 'subject'),
+  ('50000000-0000-4000-8000-000000000005', '20000000-0000-4000-8000-000000000009', 'subject'),
+  ('50000000-0000-4000-8000-000000000006', '20000000-0000-4000-8000-000000000012', 'subject'),
+  ('50000000-0000-4000-8000-000000000007', '20000000-0000-4000-8000-000000000006', 'subject'),
+  ('50000000-0000-4000-8000-000000000008', '20000000-0000-4000-8000-000000000013', 'subject')
+on conflict (news_id, team_id) do update set relationship = excluded.relationship;
+
+insert into public.event_clusters (id, canonical_title, event_at, trust_status)
+values (
+  '60000000-0000-4000-8000-000000000001',
+  '2026 年 8 月俱乐部公开活动安排（M3 验收样例）',
+  '2026-08-10T11:00:00Z',
+  'confirmed'
+)
+on conflict (id) do update set
+  canonical_title = excluded.canonical_title,
+  event_at = excluded.event_at,
+  trust_status = excluded.trust_status;
+
+insert into public.cluster_items (cluster_id, news_id, is_primary)
+values
+  ('60000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000005', true),
+  ('60000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000008', false)
+on conflict (cluster_id, news_id) do update set is_primary = excluded.is_primary;
