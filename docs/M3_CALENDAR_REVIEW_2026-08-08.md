@@ -2,7 +2,7 @@
 
 > 评审日期：2026-08-08  
 > 对应计划：Day 16–20  
-> 结论：仓库与本地 M2+M3 联合验收通过；远端数据库迁移和 Preview 上传未越过独立门禁
+> 结论：仓库、本地 M2+M3 联合验收、`football1` 迁移与 Vercel Preview 均通过；真实账号会话待测试密码
 
 ## 1. 日交付核对
 
@@ -35,11 +35,11 @@
 
 ## 4. 未关闭门禁与处理方案
 
-1. **远端数据库迁移未执行。** Preview 授权不等同于修改当前 Supabase 项目；迁移申请被安全门禁拒绝。解决方式：用户明确确认目标项目、备份/PITR 状态和迁移窗口后，再按 M1→Day 16 顺序执行并运行 advisors/SQL 验证。
-2. **本地 pgTAP 未执行。** 当前机器无可用 Docker Desktop。解决方式：在有 Docker 的环境运行 `supabase db reset --local --yes`、`supabase test db --local` 和 `supabase db lint --local`；在此之前不把 35 项脚本标为已跑通过。
-3. **Preview 未生成。** GitHub push 两次连接失败，Vercel CLI 上传超时。解决方式：网络恢复后推送提交 `9bffb9c`，由现有 Git 集成生成 Preview；随后对 URL 重跑 18 项 E2E 和运行时错误检查。
-4. **真实账号 M2 会话未验收。** 需要一个允许使用的测试邮箱/账号，在 Preview 完成邮件确认、跨浏览器读取和游客关注合并。
+1. **远端数据库迁移已关闭。** 用户明确授权后，`football1` 已应用 5 个 migration 和幂等 seed；验证得到 5 联赛、14 队、62 别名、19 来源、8 条日历样例、8 个球队关系、3 张 M3 RLS 表和 3 条 policy。匿名可读且不可写，上海日期断言正确。Security Advisor 仅报告内部来源表无公开 policy 的 INFO，Performance Advisor 仅报告新索引尚无使用统计。
+2. **本地 pgTAP 未执行。** 当前机器无可用 Docker Desktop。解决方式：在有 Docker 的环境运行 `supabase db reset --local --yes`、`supabase test db --local` 和 `supabase db lint --local`；远端 SQL/RLS/advisor 复核已作为本次发布证据，但不把 35 项脚本标为本地已跑通过。
+3. **Preview 已关闭。** GitHub 官方连接器将完整树 fast-forward 到提交 `abab918`，Vercel 部署 `dpl_2ZgsTj5iVsLrSBTBdxRVz51DeeeX` 为 READY；远端构建通过、首页 200、运行时错误为 0。深层路由受 Vercel SSO 保护，自动浏览器被重定向，因此交互证据仍引用本地 18/18 E2E。
+4. **真实账号 M2 会话未验收。** `974798309@qq.com` 当前未注册；仍需用户提供一个专用于此次测试、且不是 QQ 邮箱密码的临时密码，之后完成注册/登录、游客合并与跨会话读取。
 
 ## 5. M3 结论
 
-Day 16–20 已完成代码、测试和本地联合旅程，且与 P0 主目标一致。当前阻碍均为外部部署/数据库门禁，不是功能实现缺口；在门禁关闭前，页面会使用明确标记的验收样例，不把合成数据冒充真实新闻。
+Day 16–20 已完成代码、数据库、Preview 和本地联合旅程，且与 P0 主目标一致。仅剩真实账号会话与本机 Docker pgTAP 两项环境验收；页面保留明确标记的验收样例，不把合成数据冒充真实新闻。

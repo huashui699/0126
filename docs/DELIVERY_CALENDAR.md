@@ -20,17 +20,17 @@
 | 7 | 已完成（仓库） | 来源、来源账号 migration 与权利状态 | 来源内部表默认不向客户端开放，采集启用受批准状态约束 |
 | 8 | 已完成（仓库） | profiles、关注、Auth trigger 与本人 RLS | 排序槽 0–4 在数据库层限制每人最多 5 队 |
 | 9 | 已完成（仓库） | 幂等 seed：5 联赛、14 队、62 别名、19 官方站点身份 | 官网身份已验证，但生产自动采集仍为 0 |
-| 10 | 本地完成（生产待放行） | 连续 2 次 reset、幂等 seed、43 项 pgTAP、双用户 RLS、数据库 lint、备份/迁移/回滚手册 | 本地验收全绿；生产仍需远程漂移、备份/PITR 与 dry-run 证据 |
+| 10 | 已完成（远端迁移已执行） | 连续 2 次 reset、幂等 seed、43 项 pgTAP、双用户 RLS、数据库 lint、备份/迁移/回滚手册 | 2026-08-08 已在 `football1` 顺序执行 M1 migration 与 seed；备份/PITR 和恢复演练仍是生产上线门禁 |
 | 11 | 已完成（仓库） | 5 联赛/14 队目录、中英文与常用别名搜索 | 无 Supabase 时使用与 seed 同 ID 的内置目录，保证预览可用 |
 | 12 | 已完成（仓库） | 首次选队流程、1–5 队约束、计数与提示 | 手机和桌面 E2E 均覆盖正常流程与上限 |
 | 13 | 已完成（仓库） | 游客本地持久化、取消、上下排序、损坏数据恢复 | 刷新恢复、异常数据和空状态 E2E 通过 |
 | 14 | 已完成（仓库） | 登录/注册 UI、持久会话、游客关注追加合并 | 不覆盖账号已有关注；真实邮件确认与远程会话仍需 Preview 环境凭据验收 |
-| 15 | 已完成（仓库） | 响应式、键盘、空/错状态与 Playwright E2E | Desktop Chrome 与 Pixel 7 共 10 项 E2E 全绿；Preview 部署尚未执行 |
-| 16 | 已完成（仓库） | 新闻时间、类型、可信度、事件簇与球队关系 migration；幂等验收 seed | UTC/上海时间规则和 35 项 pgTAP 已写入；本机缺少 Docker，远端迁移因独立发布门禁未执行 |
+| 15 | 已完成（Preview） | 响应式、键盘、空/错状态与 Playwright E2E | Desktop Chrome 与 Pixel 7 共 10 项 E2E 全绿；Preview 已生成，真实账号会话待密码/邮件确认 |
+| 16 | 已完成（远端） | 新闻时间、类型、可信度、事件簇与球队关系 migration；幂等验收 seed | `football1` 已迁移并验证 8 条日历样例、RLS/GRANT、UTC/上海日期与 advisors；本机 pgTAP 仍受 Docker 缺失影响 |
 | 17 | 已完成（仓库） | 移动优先日程、前后日期切换、状态颜色与文字 | 关注球队情报按上海日期展示，空状态和加载/错误状态齐全 |
 | 18 | 已完成（仓库） | 月历与每日绿/蓝/红数量摘要 | 月份切换、日期跳转和三色计数已覆盖双端 E2E |
 | 19 | 已完成（仓库） | 球队、信息类型、可信度组合筛选与 URL 状态 | 同月筛选使用 History API 即时更新，可分享并在刷新后恢复 |
-| 20 | 已完成（仓库） | 详情、原文域名、判定理由、状态历史占位及联合复验 | M2+M3 共 18 项桌面/移动 E2E、lint、typecheck、build 和 agent-browser 视觉检查通过；Preview 上传受当前外网链路阻塞 |
+| 20 | 已完成（Preview） | 详情、原文域名、判定理由、状态历史占位及联合复验 | M2+M3 共 18 项桌面/移动 E2E、lint、typecheck、build 和 agent-browser 视觉检查通过；Preview READY、首页 200、运行时错误为 0 |
 
 完成状态与功能需求的对应关系见 [REQUIREMENTS_TRACEABILITY.md](./REQUIREMENTS_TRACEABILITY.md)。
 Day 5、Day 6–10、Day 11–15 和 Day 16–20 的详细评审分别见 [M0_REVIEW_2026-08-07.md](./M0_REVIEW_2026-08-07.md)、[M1_DATABASE_REVIEW_2026-08-07.md](./M1_DATABASE_REVIEW_2026-08-07.md)、[M2_TEAM_FOLLOWS_REVIEW_2026-08-07.md](./M2_TEAM_FOLLOWS_REVIEW_2026-08-07.md) 与 [M3_CALENDAR_REVIEW_2026-08-08.md](./M3_CALENDAR_REVIEW_2026-08-08.md)。
