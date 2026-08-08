@@ -163,3 +163,4 @@ select has_index('public', 'user_team_follows', 'user_team_follows_team_id_idx',
 select * from finish();
 
 rollback;
+

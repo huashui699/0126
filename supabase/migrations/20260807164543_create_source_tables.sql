@@ -91,3 +91,4 @@ alter table public.source_accounts enable row level security;
 comment on table public.sources is 'Internal registry of publishers, rights status, and collection approval.';
 comment on table public.source_accounts is 'Verified platform identities associated with a registered source.';
 comment on column public.sources.collection_enabled is 'True only after explicit feed/API approval; identity verification alone is insufficient.';
+

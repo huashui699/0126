@@ -43,3 +43,4 @@ pnpm build
 - 后续：球队选择 UI、登录/游客合并、情报日历、合规采集、AI 翻译摘要与可信度规则、后台管理。
 
 完整进度与生产门禁见 [每日交付日历](docs/DELIVERY_CALENDAR.md)、[M1 数据底座评审](docs/M1_DATABASE_REVIEW_2026-08-07.md) 和 [数据库运行手册](docs/DATABASE_RUNBOOK.md)。
+

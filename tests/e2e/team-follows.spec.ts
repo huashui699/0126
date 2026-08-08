@@ -66,3 +66,4 @@ test("无搜索结果提供清空入口且支持键盘选择", async ({ page }) 
   await page.keyboard.press("Enter");
   await expect(firstTeam).toHaveAttribute("aria-pressed", "true");
 });
+

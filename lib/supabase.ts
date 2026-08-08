@@ -36,3 +36,4 @@ export function createPublicClient(): SupabaseClient | null {
     },
   });
 }
+

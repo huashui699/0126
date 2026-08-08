@@ -89,3 +89,4 @@ export async function getLatestNews(): Promise<NewsResult> {
 
   return { news: data as News[], mode: "live" };
 }
+

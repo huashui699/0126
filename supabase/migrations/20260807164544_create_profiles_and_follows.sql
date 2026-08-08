@@ -105,3 +105,4 @@ create policy "Users can delete their own follows"
 
 comment on table public.profiles is 'Application profile linked one-to-one with Supabase Auth users.';
 comment on table public.user_team_follows is 'Ordered club follows; unique slots 0-4 enforce a maximum of five clubs per user.';
+

@@ -7,3 +7,4 @@ export default defineConfig([
   ...nextTypeScript,
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
 ]);
+

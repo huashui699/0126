@@ -121,3 +121,4 @@ create policy "Aliases of active teams are publicly readable"
 comment on table public.leagues is 'Five-league catalog shared by all clients.';
 comment on table public.teams is 'Platform-neutral club catalog with stable UUID identifiers.';
 comment on table public.team_aliases is 'Multilingual search and entity-matching aliases for clubs.';
+

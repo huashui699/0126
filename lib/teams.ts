@@ -50,3 +50,4 @@ export function searchTeams(query: string): Team[] {
       .some((name) => name.toLocaleLowerCase().includes(normalized)),
   );
 }
+

@@ -72,3 +72,4 @@ erDiagram
 1. 使用管理 access token 登录并核对远程 migration 历史与 schema 漂移。
 2. Supabase 平台备份/PITR 状态证据与逻辑备份恢复演练。
 3. `db push --dry-run` 审核无误后，再由负责人批准生产迁移。
+

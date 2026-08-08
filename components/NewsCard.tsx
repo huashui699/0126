@@ -48,3 +48,4 @@ export function NewsCard({ news, featured = false }: NewsCardProps) {
 
   return <article className={className}>{content}</article>;
 }
+

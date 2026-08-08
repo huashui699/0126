@@ -48,3 +48,4 @@ from (
     )
 ) as seed(title, summary, source, league, team)
 where not exists (select 1 from public.news);
+

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "0126football:guest-follows";
+const RECOVERY_KEY = `${STORAGE_KEY}:recovered`;
 const VERSION = 1;
 const MAX_FOLLOWS = 5;
 
@@ -15,8 +16,9 @@ export type GuestFollowsResult = {
 export function readGuestFollows(validIds: ReadonlySet<string>): GuestFollowsResult {
   if (typeof window === "undefined") return { teamIds: [], recovered: false };
 
+  const recoveryPending = window.sessionStorage.getItem(RECOVERY_KEY) === "1";
   const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) return { teamIds: [], recovered: false };
+  if (!raw) return { teamIds: [], recovered: recoveryPending };
 
   try {
     const parsed = JSON.parse(raw) as Partial<StoredFollows>;
@@ -28,8 +30,13 @@ export function readGuestFollows(validIds: ReadonlySet<string>): GuestFollowsRes
     return { teamIds, recovered };
   } catch {
     window.localStorage.removeItem(STORAGE_KEY);
+    window.sessionStorage.setItem(RECOVERY_KEY, "1");
     return { teamIds: [], recovered: true };
   }
+}
+
+export function clearGuestRecoveryNotice(): void {
+  if (typeof window !== "undefined") window.sessionStorage.removeItem(RECOVERY_KEY);
 }
 
 export function writeGuestFollows(teamIds: string[]): void {
@@ -41,3 +48,4 @@ export function writeGuestFollows(teamIds: string[]): void {
 export function clearGuestFollows(): void {
   if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
 }
+
