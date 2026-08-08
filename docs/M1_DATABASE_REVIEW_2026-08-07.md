@@ -2,7 +2,7 @@
 
 > 覆盖：Day 6–10<br>
 > 评审日期：2026-08-07<br>
-> 结论：**仓库交付 Conditional GO；生产发布 NO-GO**
+> 结论：**仓库与本地数据库验收 GO；生产发布 NO-GO**
 
 ## 1. 每日交付结果
 
@@ -12,7 +12,7 @@
 | 7 | 来源与账号 | `sources`、`source_accounts`，准入状态、权利备注、身份验证与采集开关，客户端默认无权限 | 完成 |
 | 8 | 用户资料与关注 | `profiles`、`user_team_follows`、Auth trigger、本人 CRUD RLS、列级 update grant、最多 5 队约束 | 完成 |
 | 9 | 初始数据 | 5 联赛、14 球队、62 别名、19 官方来源身份、19 官网账号；seed 幂等 upsert | 完成 |
-| 10 | 约束、权限、备份与演练 | 32 项 pgTAP、迁移/备份/回滚手册、静态审查 | 部分完成：真实数据库演练受环境阻挡 |
+| 10 | 约束、权限、备份与演练 | 连续 2 次 reset、幂等 seed、43 项 pgTAP（含双用户 RLS）、数据库 lint、迁移/备份/回滚手册 | 本地完成；生产备份与迁移待授权放行 |
 
 ## 2. 数据关系
 
@@ -67,10 +67,8 @@ erDiagram
 
 ## 6. 放行条件
 
-仓库可进入评审与合并；生产数据库发布前必须补齐：
+仓库与本地数据库验收已通过。生产数据库发布前仍必须补齐：
 
-1. 可运行的 Supabase CLI + Docker/Preview 数据库。
-2. `db reset`、幂等 seed 和 32 项 pgTAP 全绿。
-3. 两个真实测试用户的交叉 RLS 行为测试。
-4. Supabase 平台备份/PITR 状态证据与逻辑备份恢复演练。
-5. `db push --dry-run` 审核后再执行生产迁移。
+1. 使用管理 access token 登录并核对远程 migration 历史与 schema 漂移。
+2. Supabase 平台备份/PITR 状态证据与逻辑备份恢复演练。
+3. `db push --dry-run` 审核无误后，再由负责人批准生产迁移。

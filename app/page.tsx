@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { NewsCard } from "@/components/NewsCard";
 import { getLatestNews } from "@/lib/news";
+import Link from "next/link";
 
 export const revalidate = 300;
 
@@ -22,6 +23,10 @@ export default async function HomePage() {
               <span>关键瞬间</span>
             </h1>
             <p>聚合主流足球资讯，用清晰的中文摘要帮你快速掌握赛场内外。</p>
+            <div className="hero-actions">
+              <Link className="primary-link" href="/onboarding/teams">选择我的球队</Link>
+              <span>14 支球队 · 1 分钟完成</span>
+            </div>
           </div>
 
           <div className="hero-score" aria-label="今日焦点">

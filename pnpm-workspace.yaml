@@ -1,7 +1,16 @@
 minimumReleaseAgeExclude:
+  - '@supabase/cli-windows-x64@2.112.0'
   - '@supabase/auth-js@2.112.1'
   - '@supabase/functions-js@2.112.1'
   - '@supabase/postgrest-js@2.112.1'
   - '@supabase/realtime-js@2.112.1'
   - '@supabase/storage-js@2.112.1'
   - '@supabase/supabase-js@2.112.1'
+  - supabase@2.112.0
+  - '@supabase/cli-darwin-arm64@2.112.0'
+  - '@supabase/cli-darwin-x64@2.112.0'
+  - '@supabase/cli-linux-arm64-musl@2.112.0'
+  - '@supabase/cli-linux-arm64@2.112.0'
+  - '@supabase/cli-linux-x64-musl@2.112.0'
+  - '@supabase/cli-linux-x64@2.112.0'
+  - '@supabase/cli-windows-arm64@2.112.0'

@@ -11,7 +11,7 @@
 - `supabase/tests/database/`：pgTAP 数据库测试。
 - 数据库密码、access token、service role key 和备份文件不得提交 Git。
 
-本轮 Windows 环境无法取得匹配的 Supabase CLI 二进制，因此 3 个新迁移使用系统时间戳生成并记录在评审报告中。恢复 CLI 后，后续迁移必须使用 `supabase migration new <name>` 生成。
+项目已固定 Supabase CLI 2.112.0，并补齐 `supabase/config.toml`。现有 3 个 M1 迁移沿用已评审的时间戳；后续迁移必须使用 `supabase migration new <name>` 生成。
 
 ## 2. 本地/Preview 演练
 
@@ -21,8 +21,8 @@
 supabase --help
 supabase migration --help
 supabase init
-supabase db reset
-supabase test db
+supabase db reset --local
+supabase test db --local supabase/tests/database
 ```
 
 仓库已有 `supabase/` 时，`supabase init` 只用于补齐本地 CLI 配置；执行前先审阅其 diff，不覆盖 migration、seed 或 tests。
@@ -30,7 +30,7 @@ supabase test db
 验收：
 
 - reset 从空数据库完整执行所有 migration 和 seed。
-- pgTAP 32 项全部通过。
+- pgTAP 43 项全部通过，其中 11 项使用两个 Auth 用户验证 profile/follow 的行为级隔离。
 - 连续执行两次空库 reset，结果都应为 5 联赛、14 球队、62 别名、19 来源、19 站点账号；在隔离数据库中再直接执行一次 `seed.sql`，数量不得增加。
 - 匿名只能读取启用的联赛、球队和别名。
 - 登录用户只能读取/更新自己的 profile 和 follows。
@@ -89,10 +89,13 @@ Postgres 结构迁移优先采用“向前修复”，避免破坏性回滚造�
 | 项目 | 2026-08-07 结果 |
 |---|---|
 | 迁移文件静态检查 | 通过：建表、外键索引、RLS、grant/revoke 与 seed 数量已复核 |
-| 应用 lint/typecheck/build | 待本轮统一验证 |
-| 空库 reset | 未执行：本机没有 Docker，CLI Windows 二进制分发/下载失败 |
-| pgTAP | 已编写 32 项，未在真实 Postgres 执行 |
-| 生产备份 | 未执行：缺少数据库管理凭据/项目链接，不使用 publishable key 冒充管理权限 |
-| 生产迁移 | 未执行：必须先通过 Preview reset、pgTAP 和备份检查 |
+| 本地运行环境 | 通过：Docker Engine 29.6.2、Supabase CLI 2.112.0、Postgres 17.6 容器健康 |
+| 空库 reset | 通过：连续 2 次完整执行 4 个 migration 与 `seed.sql` |
+| seed 幂等 | 通过：额外直接重放 1 次；计数保持 5/14/62/19/19 |
+| pgTAP | 通过：2 个文件、43 项测试全绿，包含双用户 RLS 行为测试 |
+| 数据库 lint/advisors | 通过：`public` schema 无 error；security 与 performance advisors 均无问题 |
+| 应用 lint/typecheck/build | 通过：ESLint、TypeScript `--noEmit`、Next.js 16.3.0 production build 全绿 |
+| 生产备份 | 未执行：CLI 当前无管理 access token；不使用 publishable key 冒充管理权限 |
+| 远程漂移/生产迁移 | 未执行：必须先登录、核对远程 migration 历史、确认平台备份/PITR 并完成逻辑备份恢复演练 |
 
-这是一项明确的发布门禁，不是功能范围偏移。仓库实现可进入代码审查，但 M1 生产状态只能在上述证据补齐后标为完成。
+本地 Day 10 验收已经完成；生产发布仍受备份、远程漂移和 dry-run 证据约束。仓库实现可进入代码审查，但不能据此标记为已上线。
