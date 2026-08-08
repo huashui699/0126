@@ -1,7 +1,7 @@
 # 0126 Football MVP 每日交付日历
 
 > 版本：v1.1<br>
-> 实际进度更新：2026-08-07（Day 15）<br>
+> 实际进度更新：2026-08-08（Day 20）<br>
 > 计划开始：2026-08-10<br>
 > 计划上线：2026-10-15<br>
 > 总周期：45 个工作日，约 9 周<br>
@@ -26,9 +26,14 @@
 | 13 | 已完成（仓库） | 游客本地持久化、取消、上下排序、损坏数据恢复 | 刷新恢复、异常数据和空状态 E2E 通过 |
 | 14 | 已完成（仓库） | 登录/注册 UI、持久会话、游客关注追加合并 | 不覆盖账号已有关注；真实邮件确认与远程会话仍需 Preview 环境凭据验收 |
 | 15 | 已完成（仓库） | 响应式、键盘、空/错状态与 Playwright E2E | Desktop Chrome 与 Pixel 7 共 10 项 E2E 全绿；Preview 部署尚未执行 |
+| 16 | 已完成（仓库） | 新闻时间、类型、可信度、事件簇与球队关系 migration；幂等验收 seed | UTC/上海时间规则和 35 项 pgTAP 已写入；本机缺少 Docker，远端迁移因独立发布门禁未执行 |
+| 17 | 已完成（仓库） | 移动优先日程、前后日期切换、状态颜色与文字 | 关注球队情报按上海日期展示，空状态和加载/错误状态齐全 |
+| 18 | 已完成（仓库） | 月历与每日绿/蓝/红数量摘要 | 月份切换、日期跳转和三色计数已覆盖双端 E2E |
+| 19 | 已完成（仓库） | 球队、信息类型、可信度组合筛选与 URL 状态 | 同月筛选使用 History API 即时更新，可分享并在刷新后恢复 |
+| 20 | 已完成（仓库） | 详情、原文域名、判定理由、状态历史占位及联合复验 | M2+M3 共 18 项桌面/移动 E2E、lint、typecheck、build 和 agent-browser 视觉检查通过；Preview 上传受当前外网链路阻塞 |
 
 完成状态与功能需求的对应关系见 [REQUIREMENTS_TRACEABILITY.md](./REQUIREMENTS_TRACEABILITY.md)。
-Day 5、Day 6–10 和 Day 11–15 的详细评审分别见 [M0_REVIEW_2026-08-07.md](./M0_REVIEW_2026-08-07.md)、[M1_DATABASE_REVIEW_2026-08-07.md](./M1_DATABASE_REVIEW_2026-08-07.md) 与 [M2_TEAM_FOLLOWS_REVIEW_2026-08-07.md](./M2_TEAM_FOLLOWS_REVIEW_2026-08-07.md)。
+Day 5、Day 6–10、Day 11–15 和 Day 16–20 的详细评审分别见 [M0_REVIEW_2026-08-07.md](./M0_REVIEW_2026-08-07.md)、[M1_DATABASE_REVIEW_2026-08-07.md](./M1_DATABASE_REVIEW_2026-08-07.md)、[M2_TEAM_FOLLOWS_REVIEW_2026-08-07.md](./M2_TEAM_FOLLOWS_REVIEW_2026-08-07.md) 与 [M3_CALENDAR_REVIEW_2026-08-08.md](./M3_CALENDAR_REVIEW_2026-08-08.md)。
 
 ## 1. 排期假设
 
