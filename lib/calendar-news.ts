@@ -63,8 +63,8 @@ export async function getCalendarNews(month: string): Promise<CalendarResult> {
 
   const { start, end } = monthRangeUtc(month);
   const [published, events] = await Promise.all([
-    client.from("news").select(selectFields).gte("published_at", start).lt("published_at", end).order("published_at", { ascending: true }),
-    client.from("news").select(selectFields).gte("event_at", start).lt("event_at", end).order("event_at", { ascending: true }),
+    client.from("news").select(selectFields).eq("is_simulated", false).gte("published_at", start).lt("published_at", end).order("published_at", { ascending: true }),
+    client.from("news").select(selectFields).eq("is_simulated", false).gte("event_at", start).lt("event_at", end).order("event_at", { ascending: true }),
   ]);
 
   if (published.error || events.error) {
@@ -74,16 +74,14 @@ export async function getCalendarNews(month: string): Promise<CalendarResult> {
 
   const rows = [...(published.data ?? []), ...(events.data ?? [])] as unknown as Record<string, unknown>[];
   const items = Array.from(new Map(rows.map((row) => [String(row.id), normalizeRow(row)])).values());
-  return { items: items.length ? items : fixturesForMonth(month), mode: items.length ? "live" : "fallback" };
+  return { items, mode: "live" };
 }
 
 export async function getCalendarNewsById(id: string): Promise<CalendarNews | null> {
-  const fixture = calendarFixtures.find((item) => item.id === id) ?? null;
-  if (fixture) return fixture;
   const client = createPublicClient();
-  if (!client) return null;
+  if (!client) return calendarFixtures.find((item) => item.id === id) ?? null;
 
-  const { data, error } = await client.from("news").select(selectFields).eq("id", id).maybeSingle();
+  const { data, error } = await client.from("news").select(selectFields).eq("id", id).eq("is_simulated", false).maybeSingle();
   if (error) {
     console.warn("Unable to load calendar detail:", error.message);
     return null;
@@ -92,7 +90,6 @@ export async function getCalendarNewsById(id: string): Promise<CalendarNews | nu
 }
 
 export async function getTrustHistory(id: string): Promise<TrustHistoryEntry[]> {
-  if (calendarFixtures.some((item) => item.id === id)) return [];
   const client = createPublicClient();
   if (!client) return [];
   const { data, error } = await client.from("news_trust_history_public")
