@@ -248,6 +248,10 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
         </div>
       </section>
 
+      <div className="calendar-notice" role="status">
+        Beta 提示：内容由 AI 辅助整理与初步判断，可能存在遗漏或误差，请以原始来源为准。
+      </div>
+
       {dataMode !== "live" ? (
         <div className="calendar-notice" role="status">当前展示验收样例数据，仅用于验证产品流程。</div>
       ) : null}

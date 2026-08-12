@@ -8,7 +8,7 @@ export function Header() {
           <span className="brand-mark">0126</span>
           <span>FOOTBALL</span>
         </Link>
-        <span className="header-edition">V1 日历预览</span>
+        <span className="header-edition">Beta 限量测试</span>
       </div>
     </header>
   );
