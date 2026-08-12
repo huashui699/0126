@@ -1,5 +1,8 @@
 # dependencies
 /node_modules
+/.pnpm-store/
+/playwright-report/
+/test-results/
 /.pnp
 .pnp.*
 
@@ -19,12 +22,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 .DS_Store
 *.pem
 
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+/.tmp-tests/
+/.tmp-intelligence-tests/
 
 # Vercel
 .vercel

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "outDir": ".tmp-intelligence-tests",
+    "rootDir": ".",
+    "types": ["node"]
+  },
+  "files": [
+    "types/news.ts",
+    "lib/teams.ts",
+    "lib/intelligence/types.ts",
+    "lib/intelligence/extract.ts",
+    "lib/intelligence/evaluation.ts",
+    "lib/intelligence/clustering.ts",
+    "lib/intelligence/reliability.ts",
+    "lib/intelligence/job-runner.ts",
+    "tests/unit/intelligence.test.ts"
+  ]
+}

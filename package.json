@@ -7,21 +7,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:ingestion": "tsc -p tsconfig.ingestion-tests.json && node --test .tmp-tests/tests/unit/ingestion.test.js",
+    "test:intelligence": "tsc -p tsconfig.intelligence-tests.json && node --test .tmp-intelligence-tests/tests/unit/intelligence.test.js",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.112.1",
+    "ai": "7.0.56",
     "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "1.55.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "26.1.2",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "eslint": "9.39.2",
     "eslint-config-next": "16.3.0",
+    "supabase": "2.112.0",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.2"
   },
