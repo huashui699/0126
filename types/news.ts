@@ -31,3 +31,12 @@ export type CalendarNews = News & {
   trust_updated_at: string;
   team_ids: string[];
 };
+
+export type TrustHistoryEntry = {
+  previous_status: TrustStatus | null;
+  new_status: TrustStatus;
+  reason: string;
+  reason_codes: string[];
+  actor_type: "rule_engine" | "operator" | "revert";
+  created_at: string;
+};

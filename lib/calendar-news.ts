@@ -1,6 +1,6 @@
 import { createPublicClient } from "@/lib/supabase";
 import { monthRangeUtc, toShanghaiDateKey } from "@/lib/calendar-date";
-import type { CalendarNews, InformationType, TrustStatus } from "@/types/news";
+import type { CalendarNews, InformationType, TrustHistoryEntry, TrustStatus } from "@/types/news";
 
 type CalendarResult = {
   items: CalendarNews[];
@@ -15,14 +15,14 @@ const fixtureBase = {
 };
 
 export const calendarFixtures: CalendarNews[] = [
-  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000001", title: "曼城公布公开训练安排（M3 验收样例）", summary: "球队公布本周公开训练和媒体开放时间，日历按原始发布时间展示。", source: "Manchester City Official · Fixture", url: "https://www.mancity.com/", league: "英超", team: "曼城", published_at: "2026-08-08T01:30:00Z", event_at: null, info_type: "club_announcement", trust_status: "confirmed", trust_reason: "验收数据标记为官方渠道样例；仅验证展示规则，不用于事实判断。", team_ids: ["20000000-0000-4000-8000-000000000004"] },
+  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000001", title: "曼城公布公开训练安排（M3 验收样例）", summary: "球队公布本周公开训练和媒体开放时间，日历按原始发布时间展示。", source: "Manchester City Official · Fixture", url: "https://www.mancity.com/", league: "英超", team: "曼城", published_at: "2026-08-08T01:30:00Z", event_at: null, info_type: "club_announcement", trust_status: "unverified", trust_reason: "合成验收数据永不标记为绿色；仅验证展示规则。", team_ids: ["20000000-0000-4000-8000-000000000004"] },
   { ...fixtureBase, id: "50000000-0000-4000-8000-000000000002", title: "皇马新援参加合练（M3 验收样例）", summary: "多家媒体观察到新援参与合练，但俱乐部尚未发布完整名单。", source: "0126 Fixture Desk", url: "https://www.realmadrid.com/", league: "西甲", team: "皇家马德里", published_at: "2026-08-08T03:00:00Z", event_at: null, info_type: "media", trust_status: "unverified", trust_reason: "存在明确来源，但尚无针对该细节的直接官方确认。", team_ids: ["20000000-0000-4000-8000-000000000007"] },
-  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000003", title: "利物浦确认青年队晋升名单（M3 验收样例）", summary: "俱乐部公布进入一线队训练名单的青年球员。", source: "Liverpool FC Official · Fixture", url: "https://www.liverpoolfc.com/", league: "英超", team: "利物浦", published_at: "2026-08-07T08:00:00Z", event_at: null, info_type: "player", trust_status: "confirmed", trust_reason: "验收数据模拟俱乐部官网直接发布。", team_ids: ["20000000-0000-4000-8000-000000000002"] },
+  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000003", title: "利物浦确认青年队晋升名单（M3 验收样例）", summary: "俱乐部公布进入一线队训练名单的青年球员。", source: "Liverpool FC Official · Fixture", url: "https://www.liverpoolfc.com/", league: "英超", team: "利物浦", published_at: "2026-08-07T08:00:00Z", event_at: null, info_type: "player", trust_status: "unverified", trust_reason: "合成验收数据永不标记为绿色；仅模拟俱乐部发布场景。", team_ids: ["20000000-0000-4000-8000-000000000002"] },
   { ...fixtureBase, id: "50000000-0000-4000-8000-000000000004", title: "巴萨训练赛阵容观察（M3 验收样例）", summary: "训练赛阵容来自媒体现场观察，正式比赛安排仍待官方发布。", source: "0126 Fixture Desk", url: "https://www.fcbarcelona.com/", league: "西甲", team: "巴塞罗那", published_at: "2026-08-06T12:20:00Z", event_at: null, info_type: "coaching", trust_status: "unverified", trust_reason: "单一媒体观察可追溯，但缺少第二个独立来源。", team_ids: ["20000000-0000-4000-8000-000000000008"] },
-  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000005", title: "拜仁球迷开放日（M3 验收样例）", summary: "活动将在上海时间 8 月 10 日晚举行，日历按事件时间展示。", source: "FC Bayern Official · Fixture", url: "https://fcbayern.com/", league: "德甲", team: "拜仁慕尼黑", published_at: "2026-08-08T04:00:00Z", event_at: "2026-08-10T11:00:00Z", info_type: "social", trust_status: "confirmed", trust_reason: "验收数据模拟俱乐部官方活动公告，并保留独立事件时间。", team_ids: ["20000000-0000-4000-8000-000000000009"] },
-  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000006", title: "国际米兰季前赛安排更新（M3 验收样例）", summary: "开球时间调整为上海时间 8 月 12 日凌晨。", source: "Inter Official · Fixture", url: "https://www.inter.it/", league: "意甲", team: "国际米兰", published_at: "2026-08-08T05:00:00Z", event_at: "2026-08-11T18:30:00Z", info_type: "match", trust_status: "confirmed", trust_reason: "验收数据模拟俱乐部官方赛程更新。", team_ids: ["20000000-0000-4000-8000-000000000012"] },
+  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000005", title: "拜仁球迷开放日（M3 验收样例）", summary: "活动将在上海时间 8 月 10 日晚举行，日历按事件时间展示。", source: "FC Bayern Official · Fixture", url: "https://fcbayern.com/", league: "德甲", team: "拜仁慕尼黑", published_at: "2026-08-08T04:00:00Z", event_at: "2026-08-10T11:00:00Z", info_type: "social", trust_status: "unverified", trust_reason: "合成验收数据永不标记为绿色；保留独立事件时间供界面验证。", team_ids: ["20000000-0000-4000-8000-000000000009"] },
+  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000006", title: "国际米兰季前赛安排更新（M3 验收样例）", summary: "开球时间调整为上海时间 8 月 12 日凌晨。", source: "Inter Official · Fixture", url: "https://www.inter.it/", league: "意甲", team: "国际米兰", published_at: "2026-08-08T05:00:00Z", event_at: "2026-08-11T18:30:00Z", info_type: "match", trust_status: "unverified", trust_reason: "合成验收数据永不标记为绿色；仅模拟赛程更新场景。", team_ids: ["20000000-0000-4000-8000-000000000012"] },
   { ...fixtureBase, id: "50000000-0000-4000-8000-000000000007", title: "阿森纳续约谈判进展（M3 验收样例）", summary: "报道表示双方继续沟通，尚无正式公告。", source: "0126 Fixture Desk", url: "https://www.arsenal.com/", league: "英超", team: "阿森纳", published_at: "2026-08-09T02:00:00Z", event_at: null, info_type: "transfer", trust_status: "unverified", trust_reason: "报道可追溯，但俱乐部尚未确认谈判结论。", team_ids: ["20000000-0000-4000-8000-000000000006"] },
-  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000008", title: "巴黎公布社区活动（M3 验收样例）", summary: "俱乐部球员将参加本地青训社区活动。", source: "Paris Saint-Germain Official · Fixture", url: "https://www.psg.fr/", league: "法甲", team: "巴黎圣日耳曼", published_at: "2026-08-09T04:00:00Z", event_at: "2026-08-13T09:00:00Z", info_type: "club_announcement", trust_status: "confirmed", trust_reason: "验收数据模拟俱乐部官网直接发布的活动公告。", team_ids: ["20000000-0000-4000-8000-000000000013"] },
+  { ...fixtureBase, id: "50000000-0000-4000-8000-000000000008", title: "巴黎公布社区活动（M3 验收样例）", summary: "俱乐部球员将参加本地青训社区活动。", source: "Paris Saint-Germain Official · Fixture", url: "https://www.psg.fr/", league: "法甲", team: "巴黎圣日耳曼", published_at: "2026-08-09T04:00:00Z", event_at: "2026-08-13T09:00:00Z", info_type: "club_announcement", trust_status: "unverified", trust_reason: "合成验收数据永不标记为绿色；仅模拟活动公告场景。", team_ids: ["20000000-0000-4000-8000-000000000013"] },
 ];
 
 const selectFields = "id,title,summary,content,source,url,image,league,team,created_at,published_at,event_at,info_type,trust_status,trust_reason,trust_updated_at,news_teams(team_id)";
@@ -89,6 +89,21 @@ export async function getCalendarNewsById(id: string): Promise<CalendarNews | nu
     return null;
   }
   return data ? normalizeRow(data as unknown as Record<string, unknown>) : null;
+}
+
+export async function getTrustHistory(id: string): Promise<TrustHistoryEntry[]> {
+  if (calendarFixtures.some((item) => item.id === id)) return [];
+  const client = createPublicClient();
+  if (!client) return [];
+  const { data, error } = await client.from("news_trust_history_public")
+    .select("previous_status,new_status,reason,reason_codes,actor_type,created_at")
+    .eq("news_id", id)
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.warn("Unable to load trust history:", error.message);
+    return [];
+  }
+  return (data ?? []) as TrustHistoryEntry[];
 }
 
 export function safeExternalUrl(value: string | null): URL | null {

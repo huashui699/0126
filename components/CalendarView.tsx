@@ -41,13 +41,60 @@ const informationLabels: Record<InformationType, string> = {
 };
 
 const levelLabels: Record<TrustStatus, string> = {
-  confirmed: "绿色 · 官方确认",
-  unverified: "蓝色 · 有来源待核实",
-  rumor: "红色 · 传闻",
+  confirmed: "官方确认",
+  unverified: "有来源待核实",
+  rumor: "传闻",
 };
+
+const informationTypes = Object.keys(informationLabels) as InformationType[];
+const trustStatuses = Object.keys(levelLabels) as TrustStatus[];
+
+function parseMultiValue<T extends string>(value: string | null, allowed: readonly T[]): T[] {
+  if (!value) return [];
+  const allowedSet = new Set<string>(allowed);
+  return Array.from(new Set(value.split(",").filter((item): item is T => allowedSet.has(item))));
+}
 
 function displayDate(item: CalendarNews): string {
   return toShanghaiDateKey(item.event_at ?? item.published_at);
+}
+
+type DateGridProps = {
+  dates: string[];
+  byDate: Map<string, CalendarNews[]>;
+  month: string;
+  selectedDate: string;
+  onSelect: (date: string) => void;
+};
+
+function DateGrid({ dates, byDate, month, selectedDate, onSelect }: DateGridProps) {
+  return (
+    <div className="month-grid">
+      {dates.map((date) => {
+        const items = byDate.get(date) ?? [];
+        const counts = {
+          confirmed: items.filter((item) => item.trust_status === "confirmed").length,
+          unverified: items.filter((item) => item.trust_status === "unverified").length,
+          rumor: items.filter((item) => item.trust_status === "rumor").length,
+        };
+        return (
+          <button
+            key={date}
+            className={`month-day ${date.startsWith(`${month}-`) ? "" : "outside"} ${date === selectedDate ? "selected" : ""}`}
+            aria-label={`${formatShanghaiDate(date)}，官方确认 ${counts.confirmed}，待核实 ${counts.unverified}，传闻 ${counts.rumor}`}
+            onClick={() => onSelect(date)}
+          >
+            <b>{Number(date.slice(-2))}</b>
+            <span className="day-counts" aria-hidden>
+              <i className="count-confirmed">{counts.confirmed}</i>
+              <i className="count-unverified">{counts.unverified}</i>
+              <i className="count-rumor">{counts.rumor}</i>
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 function subscribeToFollows(callback: () => void) {
@@ -85,6 +132,7 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
   const dayPanelRef = useRef<HTMLElement>(null);
   const [draftTeamIds, setDraftTeamIds] = useState<string[]>([]);
   const [teamDialogOpen, setTeamDialogOpen] = useState(false);
+  const [monthExpanded, setMonthExpanded] = useState(false);
   const followsSnapshot = useSyncExternalStore(subscribeToFollows, getFollowsSnapshot, getServerFollowsSnapshot);
   const selectedTeamIds = useMemo(
     () => parseFollowsSnapshot(followsSnapshot),
@@ -104,15 +152,30 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
     };
   }, [teamDialogOpen]);
 
-  const selectedDate = parseDate(searchParams.get("date") ?? undefined, month);
+  const requestedDate = searchParams.get("date");
+  const parsedSelectedDate = parseDate(requestedDate ?? undefined, month);
+  const selectedTypes = parseMultiValue(searchParams.get("type"), informationTypes);
+  const selectedTrustStatuses = parseMultiValue(searchParams.get("trust"), trustStatuses);
   const activeTeamIds = selectedTeamIds.length ? new Set(selectedTeamIds) : validTeamIds;
-  const filteredItems = initialItems.filter((item) => item.team_ids.some((id) => activeTeamIds.has(id)));
+  const activeTypes = selectedTypes.length ? new Set<InformationType>(selectedTypes) : null;
+  const activeTrustStatuses = selectedTrustStatuses.length ? new Set<TrustStatus>(selectedTrustStatuses) : null;
+  const filteredItems = initialItems.filter((item) =>
+    item.team_ids.some((id) => activeTeamIds.has(id))
+    && (!activeTypes || activeTypes.has(item.info_type))
+    && (!activeTrustStatuses || activeTrustStatuses.has(item.trust_status)),
+  );
   const byDate = new Map<string, CalendarNews[]>();
 
   for (const item of filteredItems) {
     const key = displayDate(item);
     byDate.set(key, [...(byDate.get(key) ?? []), item]);
   }
+
+  const firstAvailableDate = Array.from(byDate.keys()).filter((date) => date.startsWith(`${month}-`)).sort()[0];
+  const hasActiveFilters = selectedTypes.length > 0 || selectedTrustStatuses.length > 0;
+  const selectedDate = (!requestedDate || (hasActiveFilters && !byDate.has(parsedSelectedDate)))
+    ? firstAvailableDate ?? parsedSelectedDate
+    : parsedSelectedDate;
 
   function updateParams(changes: Record<string, string | null>, serverNavigation = false) {
     const params = new URLSearchParams(searchParams.toString());
@@ -134,6 +197,11 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
 
   function selectMonth(nextMonth: string) {
     updateParams({ month: nextMonth, date: `${nextMonth}-01` }, true);
+  }
+
+  function toggleFilter<T extends string>(key: "type" | "trust", value: T, selected: T[]) {
+    const next = selected.includes(value) ? selected.filter((item) => item !== value) : [...selected, value];
+    updateParams({ [key]: next.length ? next.join(",") : null });
   }
 
   function openTeamDialog() {
@@ -158,6 +226,9 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
   const currentPath = `${pathname}${searchParams.size ? `?${searchParams.toString()}` : ""}`;
   const selectedItems = byDate.get(selectedDate) ?? [];
   const gridDays = monthGrid(month);
+  const selectedDayIndex = gridDays.indexOf(selectedDate);
+  const weekStartIndex = selectedDayIndex < 0 ? 0 : Math.floor(selectedDayIndex / 7) * 7;
+  const weekDays = gridDays.slice(weekStartIndex, weekStartIndex + 7);
   const selectedTeams = selectedTeamIds.flatMap((id) => teamById.get(id) ? [teamById.get(id)!] : []);
 
   return (
@@ -181,47 +252,59 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
         <div className="calendar-notice" role="status">当前展示验收样例数据，仅用于验证产品流程。</div>
       ) : null}
 
-      <section className="calendar-toolbar" aria-label="月份选择">
+      <section className="calendar-toolbar" aria-label="周视图与筛选">
         <div className="month-nav">
-          <button aria-label="上个月" onClick={() => selectMonth(shiftMonth(month, -1))}>←</button>
-          <strong>{month.replace("-", " 年 ")} 月</strong>
-          <button aria-label="下个月" onClick={() => selectMonth(shiftMonth(month, 1))}>→</button>
+          <button aria-label="上一周" onClick={() => selectDay(shiftDate(selectedDate, -7), false)}>←</button>
+          <strong>{formatShanghaiDate(weekDays[0])}－{formatShanghaiDate(weekDays[6])}</strong>
+          <button aria-label="下一周" onClick={() => selectDay(shiftDate(selectedDate, 7), false)}>→</button>
         </div>
-        <div className="count-legend" aria-label="信息级别说明">
-          <span><i className="count-confirmed" />官方确认</span>
-          <span><i className="count-unverified" />待核实</span>
-          <span><i className="count-rumor" />传闻</span>
-        </div>
+        <button
+          className="month-toggle"
+          type="button"
+          aria-expanded={monthExpanded}
+          aria-controls="full-month-view"
+          onClick={() => setMonthExpanded((current) => !current)}
+        >
+          {monthExpanded ? "收起整月" : "展开整月"}
+        </button>
+        <details className="filter-panel">
+          <summary>高级筛选 <span>{selectedTypes.length + selectedTrustStatuses.length}</span></summary>
+          <div>
+            <div className="filter-grid">
+              <fieldset>
+                <legend>信息类型</legend>
+                {informationTypes.map((type) => (
+                  <label key={type}><input type="checkbox" checked={selectedTypes.includes(type)} onChange={() => toggleFilter("type", type, selectedTypes)} />{informationLabels[type]}</label>
+                ))}
+              </fieldset>
+              <fieldset>
+                <legend>可信度</legend>
+                {trustStatuses.map((status) => (
+                  <label key={status}><input type="checkbox" checked={selectedTrustStatuses.includes(status)} onChange={() => toggleFilter("trust", status, selectedTrustStatuses)} />{levelLabels[status]}</label>
+                ))}
+              </fieldset>
+            </div>
+            <button className="clear-filters" type="button" onClick={() => updateParams({ type: null, trust: null })}>清除高级筛选</button>
+          </div>
+        </details>
       </section>
 
-      <section className="month-view" aria-label={`${month} 月历`}>
+      <section className="month-view week-view" aria-label={`${formatShanghaiDate(weekDays[0])}至${formatShanghaiDate(weekDays[6])}一周情报`}>
         <div className="weekday-row" aria-hidden>{weekdays.map((day) => <span key={day}>{day}</span>)}</div>
-        <div className="month-grid">
-          {gridDays.map((date) => {
-            const items = byDate.get(date) ?? [];
-            const counts = {
-              confirmed: items.filter((item) => item.trust_status === "confirmed").length,
-              unverified: items.filter((item) => item.trust_status === "unverified").length,
-              rumor: items.filter((item) => item.trust_status === "rumor").length,
-            };
-            return (
-              <button
-                key={date}
-                className={`month-day ${date.startsWith(`${month}-`) ? "" : "outside"} ${date === selectedDate ? "selected" : ""}`}
-                aria-label={`${formatShanghaiDate(date)}，官方确认 ${counts.confirmed}，待核实 ${counts.unverified}，传闻 ${counts.rumor}`}
-                onClick={() => selectDay(date)}
-              >
-                <b>{Number(date.slice(-2))}</b>
-                <span className="day-counts" aria-hidden>
-                  <i className="count-confirmed"><em>绿</em>{counts.confirmed}</i>
-                  <i className="count-unverified"><em>蓝</em>{counts.unverified}</i>
-                  <i className="count-rumor"><em>红</em>{counts.rumor}</i>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <DateGrid dates={weekDays} byDate={byDate} month={month} selectedDate={selectedDate} onSelect={selectDay} />
       </section>
+
+      {monthExpanded ? (
+        <section id="full-month-view" className="month-view full-month-view" aria-label={`${month} 完整月历`}>
+          <header>
+            <button aria-label="上个月" onClick={() => selectMonth(shiftMonth(month, -1))}>←</button>
+            <strong>{month.replace("-", " 年 ")} 月</strong>
+            <button aria-label="下个月" onClick={() => selectMonth(shiftMonth(month, 1))}>→</button>
+          </header>
+          <div className="weekday-row" aria-hidden>{weekdays.map((day) => <span key={day}>{day}</span>)}</div>
+          <DateGrid dates={gridDays} byDate={byDate} month={month} selectedDate={selectedDate} onSelect={selectDay} />
+        </section>
+      ) : null}
 
       <section className="day-summary" aria-labelledby="selected-date-title" ref={dayPanelRef}>
         <header className="day-summary-header">

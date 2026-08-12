@@ -212,7 +212,7 @@ $$;
 
 insert into public.news (
   id, title, summary, content, source, url, league, team, created_at,
-  published_at, event_at, info_type, trust_status, trust_reason, trust_updated_at
+  published_at, event_at, info_type, trust_status, trust_reason, trust_updated_at, is_simulated
 )
 values
   (
@@ -222,7 +222,7 @@ values
     '这是用于验证日历、筛选与详情追溯的合成数据，不代表真实新闻。',
     'Manchester City Official · Fixture', 'https://www.mancity.com/', '英超', '曼城',
     '2026-08-08T01:30:00Z', '2026-08-08T01:30:00Z', null,
-    'club_announcement', 'confirmed', '验收数据标记为官方渠道样例；仅验证展示规则，不用于事实判断。', '2026-08-08T01:35:00Z'
+    'club_announcement', 'unverified', '合成验收数据永不标记为绿色；仅验证展示规则。', '2026-08-08T01:35:00Z', true
   ),
   (
     '50000000-0000-4000-8000-000000000002',
@@ -231,7 +231,7 @@ values
     '这是用于验证待核实状态和多球队筛选的合成数据。',
     '0126 Fixture Desk', 'https://www.realmadrid.com/', '西甲', '皇家马德里',
     '2026-08-08T03:00:00Z', '2026-08-08T03:00:00Z', null,
-    'media', 'unverified', '存在明确来源，但尚无针对该细节的直接官方确认。', '2026-08-08T03:10:00Z'
+    'media', 'unverified', '存在明确来源，但尚无针对该细节的直接官方确认。', '2026-08-08T03:10:00Z', true
   ),
   (
     '50000000-0000-4000-8000-000000000003',
@@ -240,7 +240,7 @@ values
     '合成验收条目，用于验证球员类信息和官方确认标签。',
     'Liverpool FC Official · Fixture', 'https://www.liverpoolfc.com/', '英超', '利物浦',
     '2026-08-07T08:00:00Z', '2026-08-07T08:00:00Z', null,
-    'player', 'confirmed', '验收数据模拟俱乐部官网直接发布。', '2026-08-07T08:05:00Z'
+    'player', 'unverified', '合成验收数据永不标记为绿色；仅模拟俱乐部发布场景。', '2026-08-07T08:05:00Z', true
   ),
   (
     '50000000-0000-4000-8000-000000000004',
@@ -249,7 +249,7 @@ values
     '合成验收条目，用于验证过去日期和待核实状态。',
     '0126 Fixture Desk', 'https://www.fcbarcelona.com/', '西甲', '巴塞罗那',
     '2026-08-06T12:20:00Z', '2026-08-06T12:20:00Z', null,
-    'coaching', 'unverified', '单一媒体观察可追溯，但缺少第二个独立来源。', '2026-08-06T12:25:00Z'
+    'coaching', 'unverified', '单一媒体观察可追溯，但缺少第二个独立来源。', '2026-08-06T12:25:00Z', true
   ),
   (
     '50000000-0000-4000-8000-000000000005',
@@ -258,7 +258,7 @@ values
     '合成验收条目，用于验证 published_at 与 event_at 的区别。',
     'FC Bayern Official · Fixture', 'https://fcbayern.com/', '德甲', '拜仁慕尼黑',
     '2026-08-08T04:00:00Z', '2026-08-08T04:00:00Z', '2026-08-10T11:00:00Z',
-    'social', 'confirmed', '验收数据模拟俱乐部官方活动公告，并保留独立事件时间。', '2026-08-08T04:10:00Z'
+    'social', 'unverified', '合成验收数据永不标记为绿色；保留独立事件时间供界面验证。', '2026-08-08T04:10:00Z', true
   ),
   (
     '50000000-0000-4000-8000-000000000006',
@@ -267,7 +267,7 @@ values
     '合成验收条目，用于验证未来比赛和月历计数。',
     'Inter Official · Fixture', 'https://www.inter.it/', '意甲', '国际米兰',
     '2026-08-08T05:00:00Z', '2026-08-08T05:00:00Z', '2026-08-11T18:30:00Z',
-    'match', 'confirmed', '验收数据模拟俱乐部官方赛程更新。', '2026-08-08T05:05:00Z'
+    'match', 'unverified', '合成验收数据永不标记为绿色；仅模拟赛程更新场景。', '2026-08-08T05:05:00Z', true
   ),
   (
     '50000000-0000-4000-8000-000000000007',
@@ -276,7 +276,7 @@ values
     '合成验收条目，用于验证转会类筛选和待核实标签。',
     '0126 Fixture Desk', 'https://www.arsenal.com/', '英超', '阿森纳',
     '2026-08-09T02:00:00Z', '2026-08-09T02:00:00Z', null,
-    'transfer', 'unverified', '报道可追溯，但俱乐部尚未确认谈判结论。', '2026-08-09T02:05:00Z'
+    'transfer', 'unverified', '报道可追溯，但俱乐部尚未确认谈判结论。', '2026-08-09T02:05:00Z', true
   ),
   (
     '50000000-0000-4000-8000-000000000008',
@@ -285,7 +285,7 @@ values
     '合成验收条目，用于验证未来日期和不同联赛展示。',
     'Paris Saint-Germain Official · Fixture', 'https://www.psg.fr/', '法甲', '巴黎圣日耳曼',
     '2026-08-09T04:00:00Z', '2026-08-09T04:00:00Z', '2026-08-13T09:00:00Z',
-    'club_announcement', 'confirmed', '验收数据模拟俱乐部官网直接发布的活动公告。', '2026-08-09T04:05:00Z'
+    'club_announcement', 'unverified', '合成验收数据永不标记为绿色；仅模拟活动公告场景。', '2026-08-09T04:05:00Z', true
   )
 on conflict (id) do update set
   title = excluded.title,
@@ -300,7 +300,8 @@ on conflict (id) do update set
   info_type = excluded.info_type,
   trust_status = excluded.trust_status,
   trust_reason = excluded.trust_reason,
-  trust_updated_at = excluded.trust_updated_at;
+  trust_updated_at = excluded.trust_updated_at,
+  is_simulated = excluded.is_simulated;
 
 insert into public.news_teams (news_id, team_id, relationship)
 values
@@ -319,7 +320,7 @@ values (
   '60000000-0000-4000-8000-000000000001',
   '2026 年 8 月俱乐部公开活动安排（M3 验收样例）',
   '2026-08-10T11:00:00Z',
-  'confirmed'
+  'unverified'
 )
 on conflict (id) do update set
   canonical_title = excluded.canonical_title,

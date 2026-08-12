@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
 import { TrustBadge } from "@/components/TrustBadge";
-import { getCalendarNewsById, safeExternalUrl } from "@/lib/calendar-news";
+import { getCalendarNewsById, getTrustHistory, safeExternalUrl } from "@/lib/calendar-news";
 import { formatShanghaiDateTime } from "@/lib/calendar-date";
 
 const informationLabels = {
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Pick<NewsDetailProps, "params
 
 export default async function NewsDetailPage({ params, searchParams }: NewsDetailProps) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const item = await getCalendarNewsById(id);
+  const [item, history] = await Promise.all([getCalendarNewsById(id), getTrustHistory(id)]);
   if (!item) notFound();
 
   const returnPath = safeReturnPath(query.returnTo);
@@ -86,10 +86,19 @@ export default async function NewsDetailPage({ params, searchParams }: NewsDetai
               <span className="section-kicker">STATUS HISTORY</span>
               <h2 id="history-title">状态历史</h2>
             </div>
-            <div className="history-empty">
-              <strong>暂无状态变更</strong>
-              <p>完整审计历史将在 Day 37 实现。本页不会生成或暗示不存在的历史记录。</p>
-            </div>
+            {history.length ? (
+              <ol className="history-list">
+                {history.map((entry) => (
+                  <li key={`${entry.created_at}-${entry.new_status}`}>
+                    <strong>{entry.previous_status ?? "初始"} → {entry.new_status}</strong>
+                    <p>{entry.reason}</p>
+                    <time dateTime={entry.created_at}>{formatShanghaiDateTime(entry.created_at)}</time>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <div className="history-empty"><strong>暂无状态变更</strong><p>当前没有可展示的规则或人工变更记录。</p></div>
+            )}
           </section>
         </article>
       </main>

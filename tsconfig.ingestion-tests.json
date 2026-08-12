@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "outDir": ".tmp-tests",
+    "rootDir": ".",
+    "types": ["node"]
+  },
+  "files": [
+    "lib/teams.ts",
+    "lib/ingestion/types.ts",
+    "lib/ingestion/normalize.ts",
+    "lib/ingestion/adapters.ts",
+    "lib/ingestion/discovery-types.ts",
+    "lib/ingestion/source-catalog.ts",
+    "lib/ingestion/discovery.ts",
+    "lib/ingestion/runner.ts",
+    "lib/ingestion/memory-repository.ts",
+    "tests/unit/ingestion.test.ts"
+  ]
+}
