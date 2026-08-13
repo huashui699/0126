@@ -156,11 +156,11 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
   const parsedSelectedDate = parseDate(requestedDate ?? undefined, month);
   const selectedTypes = parseMultiValue(searchParams.get("type"), informationTypes);
   const selectedTrustStatuses = parseMultiValue(searchParams.get("trust"), trustStatuses);
-  const activeTeamIds = selectedTeamIds.length ? new Set(selectedTeamIds) : validTeamIds;
+  const activeTeamIds = new Set(selectedTeamIds);
   const activeTypes = selectedTypes.length ? new Set<InformationType>(selectedTypes) : null;
   const activeTrustStatuses = selectedTrustStatuses.length ? new Set<TrustStatus>(selectedTrustStatuses) : null;
   const filteredItems = initialItems.filter((item) =>
-    item.team_ids.some((id) => activeTeamIds.has(id))
+    (!selectedTeamIds.length || item.team_ids.some((id) => activeTeamIds.has(id)))
     && (!activeTypes || activeTypes.has(item.info_type))
     && (!activeTrustStatuses || activeTrustStatuses.has(item.trust_status)),
   );
@@ -171,10 +171,11 @@ export function CalendarView({ initialItems, month, dataMode }: CalendarViewProp
     byDate.set(key, [...(byDate.get(key) ?? []), item]);
   }
 
-  const firstAvailableDate = Array.from(byDate.keys()).filter((date) => date.startsWith(`${month}-`)).sort()[0];
+  const availableDates = Array.from(byDate.keys()).filter((date) => date.startsWith(`${month}-`)).sort();
+  const latestAvailableDate = availableDates.at(-1);
   const hasActiveFilters = selectedTypes.length > 0 || selectedTrustStatuses.length > 0;
   const selectedDate = (!requestedDate || (hasActiveFilters && !byDate.has(parsedSelectedDate)))
-    ? firstAvailableDate ?? parsedSelectedDate
+    ? latestAvailableDate ?? parsedSelectedDate
     : parsedSelectedDate;
 
   function updateParams(changes: Record<string, string | null>, serverNavigation = false) {

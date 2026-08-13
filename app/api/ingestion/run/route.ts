@@ -4,6 +4,7 @@ import { isAuthorizedIngestionRequest } from "@/lib/ingestion/request-auth";
 import { runIngestion, runIsolatedBatch } from "@/lib/ingestion/runner";
 import { getDiscoverySourceById } from "@/lib/ingestion/source-catalog";
 import { SupabaseIngestionRepository } from "@/lib/ingestion/supabase-repository";
+import { translateCandidatesToChinese } from "@/lib/intelligence/translate-candidates";
 import { createServiceClient } from "@/lib/supabase";
 
 export const runtime = "nodejs";
@@ -35,7 +36,7 @@ async function executeScheduledDiscovery() {
     return source ? [{ config, source }] : [];
   });
   const results = await runIsolatedBatch(runnable.map(({ config, source }) => ({
-    adapter: new ApprovedDiscoveryAdapter(source, config.discovery_url, config.max_items),
+    adapter: new ApprovedDiscoveryAdapter(source, config.discovery_url, config.max_items, fetch, translateCandidatesToChinese),
     repository,
     idempotencyKey: `${source.slug}:schedule:${bucket}`,
     triggerType: "schedule" as const,

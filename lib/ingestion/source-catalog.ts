@@ -5,6 +5,7 @@ export type DiscoverySource = {
   homepageUrl: string;
   articlePathPattern?: string;
   listingUrls?: string[];
+  defaultTeamId?: string;
 };
 
 export const discoverySources: DiscoverySource[] = [
@@ -14,11 +15,11 @@ export const discoverySources: DiscoverySource[] = [
   { id: "30000000-0000-4000-8000-000000000004", slug: "serie-a-official", name: "Lega Serie A Official", homepageUrl: "https://www.legaseriea.it/" },
   { id: "30000000-0000-4000-8000-000000000005", slug: "ligue-1-official", name: "Ligue 1 Official", homepageUrl: "https://ligue1.com/" },
   { id: "30000000-0000-4000-8000-000000000006", slug: "manchester-united-official", name: "Manchester United Official", homepageUrl: "https://www.manutd.com/" },
-  { id: "30000000-0000-4000-8000-000000000007", slug: "liverpool-official", name: "Liverpool FC Official", homepageUrl: "https://www.liverpoolfc.com/", articlePathPattern: "^/news/", listingUrls: ["https://www.liverpoolfc.com/news"] },
+  { id: "30000000-0000-4000-8000-000000000007", slug: "liverpool-official", name: "Liverpool FC Official", homepageUrl: "https://www.liverpoolfc.com/", articlePathPattern: "^/news/", listingUrls: ["https://www.liverpoolfc.com/news"], defaultTeamId: "20000000-0000-4000-8000-000000000002" },
   { id: "30000000-0000-4000-8000-000000000008", slug: "chelsea-official", name: "Chelsea FC Official", homepageUrl: "https://www.chelseafc.com/" },
   { id: "30000000-0000-4000-8000-000000000009", slug: "manchester-city-official", name: "Manchester City Official", homepageUrl: "https://www.mancity.com/", articlePathPattern: "^/news/", listingUrls: ["https://www.mancity.com/news"] },
   { id: "30000000-0000-4000-8000-000000000010", slug: "tottenham-hotspur-official", name: "Tottenham Hotspur Official", homepageUrl: "https://www.tottenhamhotspur.com/" },
-  { id: "30000000-0000-4000-8000-000000000011", slug: "arsenal-official", name: "Arsenal Official", homepageUrl: "https://www.arsenal.com/", articlePathPattern: "^/news/", listingUrls: ["https://www.arsenal.com/news"] },
+  { id: "30000000-0000-4000-8000-000000000011", slug: "arsenal-official", name: "Arsenal Official", homepageUrl: "https://www.arsenal.com/", articlePathPattern: "^/news/", listingUrls: ["https://www.arsenal.com/news"], defaultTeamId: "20000000-0000-4000-8000-000000000006" },
   { id: "30000000-0000-4000-8000-000000000012", slug: "real-madrid-official", name: "Real Madrid Official", homepageUrl: "https://www.realmadrid.com/" },
   { id: "30000000-0000-4000-8000-000000000013", slug: "barcelona-official", name: "FC Barcelona Official", homepageUrl: "https://www.fcbarcelona.com/" },
   { id: "30000000-0000-4000-8000-000000000014", slug: "bayern-munich-official", name: "FC Bayern Official", homepageUrl: "https://fcbayern.com/" },
