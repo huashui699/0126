@@ -172,6 +172,41 @@ async function fetchBoundedText(url: string, fetcher: Fetcher, signal?: AbortSig
   return text;
 }
 
+async function discoverOfficialApi(source: DiscoverySource, fetcher: Fetcher, signal?: AbortSignal): Promise<DiscoveredUrl[]> {
+  if (!source.officialApiUrl) return [];
+  const response = await fetcher(source.officialApiUrl, {
+    signal,
+    headers: {
+      accept: "application/json",
+      origin: new URL(source.homepageUrl).origin,
+      "user-agent": USER_AGENT,
+    },
+  });
+  if (!response.ok) throw new Error(`discovery_api_http_${response.status}`);
+  const declaredLength = Number(response.headers.get("content-length") ?? 0);
+  if (declaredLength > MAX_RESPONSE_BYTES) throw new Error("discovery_response_too_large");
+  const text = await response.text();
+  if (text.length > MAX_RESPONSE_BYTES) throw new Error("discovery_response_too_large");
+  const payload = JSON.parse(text) as { content?: Array<Record<string, unknown>> };
+
+  return (payload.content ?? []).flatMap((item) => {
+    const id = typeof item.id === "number" || typeof item.id === "string" ? String(item.id) : "";
+    const title = typeof item.title === "string" ? item.title.trim() : "";
+    if (!id || !title) return [];
+    const rawSegment = typeof item.titleUrlSegment === "string" ? item.titleUrlSegment.trim() : "";
+    const segment = rawSegment || title.toLocaleLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
+    return [{
+      url: new URL(`/en/news/${encodeURIComponent(id)}/${encodeURIComponent(segment)}`, source.homepageUrl).toString(),
+      title,
+      description: typeof item.description === "string"
+        ? item.description.trim().slice(0, 600)
+        : (typeof item.summary === "string" ? item.summary.trim().slice(0, 600) : ""),
+      publishedAt: normalizeDate(typeof item.date === "string" ? item.date : ""),
+      origin: "official_api" as const,
+    }];
+  });
+}
+
 function likelyArticle(url: URL, source: DiscoverySource): boolean {
   const path = url.pathname.toLocaleLowerCase();
   if (path === "/" || /\.(?:jpg|jpeg|png|gif|webp|svg|pdf|xml|gz)$/iu.test(path)) return false;
@@ -201,13 +236,26 @@ export async function discoverSourceCandidates(input: {
   const root = safeUrl(rootUrl, source.homepageUrl);
   if (!root || !sameSourceHost(root, source)) throw new Error("discovery_url_not_allowlisted");
 
-  const rootText = await fetchBoundedText(root.toString(), fetcher, signal);
-  let documents = /^\s*user-agent\s*:/imu.test(rootText)
-    ? parseRobotsSitemaps(rootText, source)
-    : [root.toString()];
+  const discovered: DiscoveredUrl[] = [];
+  try {
+    discovered.push(...await discoverOfficialApi(source, fetcher, signal));
+  } catch {
+    // Approved HTML and sitemap discovery below remains the independent fallback.
+  }
+
+  let rootText = "";
+  try {
+    rootText = await fetchBoundedText(root.toString(), fetcher, signal);
+  } catch {
+    // Some official sites block robots/sitemap requests from cloud hosts while
+    // leaving their public news listings available. Continue with allowlisted
+    // listing URLs instead of failing the entire source.
+  }
+  let documents = rootText
+    ? (/^\s*user-agent\s*:/imu.test(rootText) ? parseRobotsSitemaps(rootText, source) : [root.toString()])
+    : [];
   if (!documents.length) documents = [new URL("/sitemap.xml", source.homepageUrl).toString()];
 
-  const discovered: DiscoveredUrl[] = [];
   for (const documentUrl of documents.slice(0, 3)) {
     try {
       const parsed = parseDiscoveryDocument(await fetchBoundedText(documentUrl, fetcher, signal), documentUrl);
@@ -269,7 +317,7 @@ export async function discoverSourceCandidates(input: {
     .filter((entry) => entry.title.trim().length >= 3)
     .slice(0, limit)
     .map((entry) => {
-      const publishedAt = entry.publishedAt ?? new Date(0).toISOString();
+      const publishedAt = entry.publishedAt ?? new Date().toISOString();
       const contentHash = createHash("sha256").update(`${entry.parsed.toString()}\n${entry.title}\n${entry.description}`).digest("hex");
       const predictedTeamIds = Array.from(new Set([
         ...matchTeamIds({ externalId: contentHash.slice(0, 24), url: entry.parsed.toString(), title: entry.title, summary: entry.description, publishedAt }),

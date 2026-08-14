@@ -38,7 +38,7 @@ async function executeScheduledDiscovery() {
   const results = await runIsolatedBatch(runnable.map(({ config, source }) => ({
     adapter: new ApprovedDiscoveryAdapter(source, config.discovery_url, config.max_items, fetch, translateCandidatesToChinese),
     repository,
-    idempotencyKey: `${source.slug}:schedule:${bucket}`,
+    idempotencyKey: `${source.slug}:schedule:v3:${bucket}`,
     triggerType: "schedule" as const,
   })));
 
