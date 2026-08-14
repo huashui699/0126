@@ -9,7 +9,7 @@ export type DiscoveryCandidate = {
   excerpt: string;
   contentHash: string;
   predictedTeamIds: string[];
-  evidenceOrigin: "rss" | "atom" | "sitemap";
+  evidenceOrigin: "rss" | "atom" | "sitemap" | "official_api";
   translatedTitle?: string;
   translatedExcerpt?: string;
   translationStatus?: "translated" | "source_chinese" | "not_configured" | "failed" | "rejected";

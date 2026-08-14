@@ -100,7 +100,28 @@ export class SupabaseIngestionRepository implements IngestionRepository {
       rawItemId = existingRaw.id;
       const existingNews = await this.client.from("news").select("id").eq("raw_item_id", rawItemId).maybeSingle();
       throwDb(existingNews.error, "read_duplicate_news");
-      if (existingNews.data) return "duplicate";
+      if (existingNews.data) {
+        const publicExcerpt = item.summary ?? item.bodyExcerpt?.slice(0, 600) ?? null;
+        const rawUpdate = await this.client.from("raw_items").update({
+          title: item.title,
+          summary: item.summary,
+          body_excerpt: item.bodyExcerpt,
+          published_at: item.publishedAt,
+          content_hash: item.contentHash,
+          raw_payload: item.rawPayload,
+          processing_status: "normalized",
+        }).eq("id", rawItemId);
+        throwDb(rawUpdate.error, "refresh_duplicate_raw_item");
+
+        const newsUpdate = await this.client.from("news").update({
+          title: item.title,
+          summary: item.summary,
+          content: publicExcerpt,
+          published_at: item.publishedAt,
+        }).eq("id", existingNews.data.id);
+        throwDb(newsUpdate.error, "refresh_duplicate_news");
+        return "duplicate";
+      }
     } else {
       throwDb(rawInsert.error, "insert_raw_item");
     }

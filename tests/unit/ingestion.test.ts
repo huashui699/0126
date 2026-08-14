@@ -62,6 +62,59 @@ test("robots、Sitemap 与文章元数据可以组成真实候选", async () => 
   assert.equal(candidates[0].contentHash.length, 64);
 });
 
+test("根发现入口被云主机阻止时仍回退到批准的新闻列表", async () => {
+  const source: DiscoverySource = {
+    ...discoverySource,
+    listingUrls: ["https://approved.example/news"],
+  };
+  const startedAt = Date.now();
+  const fetcher = async (input: string | URL | Request) => {
+    const url = String(input);
+    if (url.endsWith("/robots.txt")) return new Response("forbidden", { status: 403 });
+    if (url === "https://approved.example/news") {
+      return new Response('<a href="/news/cloud-safe-story">Story</a>', { status: 200 });
+    }
+    if (url === "https://approved.example/news/cloud-safe-story") {
+      return new Response('<meta property="og:title" content="Official cloud-safe story">', { status: 200 });
+    }
+    return new Response("missing", { status: 404 });
+  };
+
+  const candidates = await discoverSourceCandidates({ source, fetcher: fetcher as typeof fetch });
+  assert.equal(candidates.length, 1);
+  assert.equal(candidates[0].title, "Official cloud-safe story");
+  assert.ok(Date.parse(candidates[0].publishedAt) >= startedAt);
+});
+
+test("批准的官方内容 API 提供标题、摘要和真实发布时间", async () => {
+  const source: DiscoverySource = {
+    ...discoverySource,
+    articlePathPattern: "^/en/news/[0-9]+/",
+    listingUrls: [],
+    officialApiUrl: "https://api.approved.example/content/news",
+  };
+  const fetcher = async (input: string | URL | Request) => {
+    if (String(input) === source.officialApiUrl) {
+      return Response.json({ content: [{
+        id: 4688324,
+        title: "Official league update",
+        description: "A first-party metadata summary.",
+        date: "2026-08-14T10:00:00Z",
+        titleUrlSegment: "official-league-update",
+      }] });
+    }
+    return new Response("forbidden", { status: 403 });
+  };
+
+  const candidates = await discoverSourceCandidates({ source, fetcher: fetcher as typeof fetch });
+  assert.equal(candidates.length, 1);
+  assert.equal(candidates[0].title, "Official league update");
+  assert.equal(candidates[0].excerpt, "A first-party metadata summary.");
+  assert.equal(candidates[0].publishedAt, "2026-08-14T10:00:00.000Z");
+  assert.equal(candidates[0].evidenceOrigin, "official_api");
+  assert.equal(candidates[0].url, "https://approved.example/en/news/4688324/official-league-update");
+});
+
 test("来源发现拒绝跨域 Sitemap，避免把接口变成任意 URL 代理", () => {
   assert.deepEqual(parseRobotsSitemaps(
     "Sitemap: https://evil.example/sitemap.xml",

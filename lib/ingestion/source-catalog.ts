@@ -5,11 +5,12 @@ export type DiscoverySource = {
   homepageUrl: string;
   articlePathPattern?: string;
   listingUrls?: string[];
+  officialApiUrl?: string;
   defaultTeamId?: string;
 };
 
 export const discoverySources: DiscoverySource[] = [
-  { id: "30000000-0000-4000-8000-000000000001", slug: "premier-league-official", name: "Premier League Official", homepageUrl: "https://www.premierleague.com/", articlePathPattern: "^/en/news/[0-9]+/", listingUrls: ["https://www.premierleague.com/en/news"] },
+  { id: "30000000-0000-4000-8000-000000000001", slug: "premier-league-official", name: "Premier League Official", homepageUrl: "https://www.premierleague.com/", articlePathPattern: "^/en/news/[0-9]+/", listingUrls: ["https://www.premierleague.com/en/news", "https://www.premierleague.com/en/content-listing"], officialApiUrl: "https://api.premierleague.com/content/premierleague/news/en?offset=0&limit=20&detail=DETAILED" },
   { id: "30000000-0000-4000-8000-000000000002", slug: "la-liga-official", name: "LALIGA Official", homepageUrl: "https://www.laliga.com/" },
   { id: "30000000-0000-4000-8000-000000000003", slug: "bundesliga-official", name: "Bundesliga Official", homepageUrl: "https://www.bundesliga.com/" },
   { id: "30000000-0000-4000-8000-000000000004", slug: "serie-a-official", name: "Lega Serie A Official", homepageUrl: "https://www.legaseriea.it/" },
