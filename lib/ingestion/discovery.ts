@@ -271,7 +271,10 @@ export async function discoverSourceCandidates(input: {
     .map((entry) => {
       const publishedAt = entry.publishedAt ?? new Date(0).toISOString();
       const contentHash = createHash("sha256").update(`${entry.parsed.toString()}\n${entry.title}\n${entry.description}`).digest("hex");
-      const predictedTeamIds = matchTeamIds({ externalId: contentHash.slice(0, 24), url: entry.parsed.toString(), title: entry.title, summary: entry.description, publishedAt });
+      const predictedTeamIds = Array.from(new Set([
+        ...matchTeamIds({ externalId: contentHash.slice(0, 24), url: entry.parsed.toString(), title: entry.title, summary: entry.description, publishedAt }),
+        ...(source.defaultTeamId ? [source.defaultTeamId] : []),
+      ]));
       return {
         id: contentHash.slice(0, 24),
         sourceId: source.id,
@@ -297,6 +300,7 @@ export class ApprovedDiscoveryAdapter implements IngestionAdapter {
     readonly discoveryUrl: string,
     private readonly maxItems = 20,
     private readonly fetcher: Fetcher = fetch,
+    private readonly translateCandidates: (candidates: DiscoveryCandidate[]) => Promise<DiscoveryCandidate[]> = async (candidates) => candidates,
   ) {}
 
   get key(): string { return this.source.slug; }
@@ -304,14 +308,15 @@ export class ApprovedDiscoveryAdapter implements IngestionAdapter {
 
   async fetchItems(signal?: AbortSignal): Promise<FeedItem[]> {
     const candidates = await discoverSourceCandidates({ source: this.source, discoveryUrl: this.discoveryUrl, fetcher: this.fetcher, limit: this.maxItems, signal });
-    return candidates.map((candidate) => ({
+    const translated = await this.translateCandidates(candidates);
+    return translated.map((candidate) => ({
       externalId: candidate.id,
       url: candidate.url,
-      title: candidate.title,
-      summary: candidate.excerpt || null,
+      title: candidate.translatedTitle ?? candidate.title,
+      summary: (candidate.translatedExcerpt ?? candidate.excerpt) || null,
       publishedAt: candidate.publishedAt,
       teamHints: candidate.predictedTeamIds,
-      raw: { discovery_origin: candidate.evidenceOrigin, content_hash: candidate.contentHash },
+      raw: { discovery_origin: candidate.evidenceOrigin, content_hash: candidate.contentHash, source_title: candidate.title, source_excerpt: candidate.excerpt, translation_status: candidate.translationStatus },
     }));
   }
 }

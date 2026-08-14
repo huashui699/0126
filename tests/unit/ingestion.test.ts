@@ -121,6 +121,17 @@ test("14 支球队逐队基准提示都能稳定映射且不越界", () => {
   }
 });
 
+test("发现器给出的合法球队 UUID 会被规范化器保留", () => {
+  const arsenalId = "20000000-0000-4000-8000-000000000006";
+  assert.deepEqual(matchTeamIds({
+    externalId: "uuid-hint",
+    url: "https://www.arsenal.com/news/academy-update",
+    title: "Academy update",
+    publishedAt: "2026-08-13T00:00:00Z",
+    teamHints: [arsenalId],
+  }), [arsenalId]);
+});
+
 test("模拟 Feed 完成 raw 到 news 候选闭环并保持显式模拟标记", async () => {
   const repository = new MemoryIngestionRepository();
   const result = await runIngestion({

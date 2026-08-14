@@ -39,6 +39,7 @@ function comparableText(value: string): string {
 }
 
 export function matchTeamIds(item: FeedItem): string[] {
+  const explicitIds = new Set((item.teamHints ?? []).filter((hint) => teams.some((team) => team.id === hint)));
   const haystack = comparableText([item.title, item.summary, item.content, ...(item.teamHints ?? [])].filter(Boolean).join(" "));
   return teams.flatMap((team) => {
     const names = [team.nameZh, team.nameEn, team.shortNameZh, team.shortNameEn, ...team.aliases];
@@ -46,7 +47,7 @@ export function matchTeamIds(item: FeedItem): string[] {
       const needle = comparableText(name).trim();
       return needle.length > 1 && haystack.includes(` ${needle} `);
     });
-    return matched ? [team.id] : [];
+    return matched || explicitIds.has(team.id) ? [team.id] : [];
   });
 }
 
