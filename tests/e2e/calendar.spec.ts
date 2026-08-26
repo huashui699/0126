@@ -27,8 +27,8 @@ test("可展开完整月份并再次收起", async ({ page }) => {
 test("未指定日期时自动显示当月有内容的新闻", async ({ page }) => {
   await page.goto("/?month=2026-08");
 
-  await expect(page.getByRole("heading", { name: "8月6日周四" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /巴萨训练赛阵容观察/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "8月13日周四" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /巴黎公布社区活动/ })).toBeVisible();
 });
 
 test("点击日期显示当天各条信息简述", async ({ page }) => {

@@ -125,6 +125,8 @@
 
 2026-08-06 的逐来源实时审核结果见 [SOURCE_AUDIT_2026-08-06.md](./SOURCE_AUDIT_2026-08-06.md)。在该审核中，14 个俱乐部 HTML、5 个联赛 HTML 和首批 5 个媒体 Feed 均未获得“可直接用于生产自动采集”的批准。
 
+2026-08-13 后续决策：产品负责人批准 `premier-league-official`、`liverpool-official`、`arsenal-official` 三个官方来源进行仅元数据发现，文章正文继续保留在发布方网站；该决策已由 `20260813104439_enable_initial_approved_sources.sql` 版本化。此批准不自动扩展到其他来源，也不替代后续权利复核。
+
 ## 7. 建议的第一批实际接入顺序
 
 ### Wave 1：官方身份与替代渠道底座
