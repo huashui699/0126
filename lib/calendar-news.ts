@@ -1,4 +1,5 @@
 import { createPublicClient } from "@/lib/supabase";
+import { cache } from "react";
 import { monthRangeUtc, toShanghaiDateKey } from "@/lib/calendar-date";
 import type { CalendarNews, InformationType, TrustHistoryEntry, TrustStatus } from "@/types/news";
 
@@ -57,7 +58,17 @@ function fixturesForMonth(month: string): CalendarNews[] {
   return calendarFixtures.filter((item) => toShanghaiDateKey(item.event_at ?? item.published_at).startsWith(`${month}-`));
 }
 
+function fixtureById(id: string): CalendarNews | null {
+  return calendarFixtures.find((item) => item.id === id) ?? null;
+}
+
+function shouldUseCalendarFixtures(): boolean {
+  return process.env.E2E_USE_CALENDAR_FIXTURES === "true";
+}
+
 export async function getCalendarNews(month: string): Promise<CalendarResult> {
+  if (shouldUseCalendarFixtures()) return { items: fixturesForMonth(month), mode: "preview" };
+
   const client = createPublicClient();
   if (!client) return { items: fixturesForMonth(month), mode: "preview" };
 
@@ -77,19 +88,26 @@ export async function getCalendarNews(month: string): Promise<CalendarResult> {
   return { items, mode: "live" };
 }
 
-export async function getCalendarNewsById(id: string): Promise<CalendarNews | null> {
+async function loadCalendarNewsById(id: string): Promise<CalendarNews | null> {
+  if (shouldUseCalendarFixtures()) return fixtureById(id);
+
   const client = createPublicClient();
-  if (!client) return calendarFixtures.find((item) => item.id === id) ?? null;
+  if (!client) return fixtureById(id);
 
   const { data, error } = await client.from("news").select(selectFields).eq("id", id).eq("is_simulated", false).maybeSingle();
   if (error) {
-    console.warn("Unable to load calendar detail:", error.message);
-    return null;
+    const fixture = fixtureById(id);
+    console.warn("Unable to load calendar detail; using preview fixture when available:", error.message);
+    return fixture;
   }
   return data ? normalizeRow(data as unknown as Record<string, unknown>) : null;
 }
 
+export const getCalendarNewsById = cache(loadCalendarNewsById);
+
 export async function getTrustHistory(id: string): Promise<TrustHistoryEntry[]> {
+  if (shouldUseCalendarFixtures()) return [];
+
   const client = createPublicClient();
   if (!client) return [];
   const { data, error } = await client.from("news_trust_history_public")
